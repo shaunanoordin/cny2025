@@ -1,0 +1,1 @@
+- Figure out how to specify previews for Bluesky/Mastadon.
