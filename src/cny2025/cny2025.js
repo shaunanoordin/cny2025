@@ -1,9 +1,8 @@
 import Story from '@avo/story'
-import ImageAsset from '@avo/image-asset.js'
 import { ROTATIONS } from '@avo/constants.js'
 
 import Snake from './entities/snake.js'
-// import PlayerControls from './rules/player-controls.js'
+import SnakeControls from './rules/snake-controls.js'
 
 export default class CNY2025 extends Story {
   constructor (app) {
@@ -28,7 +27,6 @@ export default class CNY2025 extends Story {
     app.hero.rotation = ROTATIONS.NORTH
     app.camera.target = app.hero
 
-    // app.addRule(new PlayerControls(app))
-
+    app.addRule(new SnakeControls(app))
   }
 }

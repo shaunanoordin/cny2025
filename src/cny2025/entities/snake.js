@@ -12,6 +12,7 @@ export default class Snake extends Entity {
 
     this.intent = undefined
     this.action = undefined
+    this.moving = false
   }
 
   /*
@@ -21,5 +22,27 @@ export default class Snake extends Entity {
 
   play () {
     super.play()
+
+    // Automatically transform intent into action
+    this.action = this.intent
+    const action = this.action
+
+    // Steer the snake!
+    if (action?.name === 'move') {
+      const directionX = action.directionX || 0
+      const directionY = action.directionY || 0
+      if (!directionX && !directionY) return
+
+      this.rotation = Math.atan2(directionY, directionX)
+      this.moving = true
+    }
+
+    // Move the snake!
+    if (this.moving) {
+      const SPEED = 4
+
+      this.moveX = SPEED * Math.cos(this.rotation)
+      this.moveY = SPEED * Math.sin(this.rotation)
+    }
   }
 }
