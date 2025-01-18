@@ -1,6 +1,7 @@
 import Entity from '@avo/entity'
 // import { POINTER_STATES, FRAME_DURATION, LAYERS, DIRECTIONS } from '@avo/constants.js'
 import { angleDiff } from '@avo/misc.js'
+import { LAYERS } from '@avo/constants.js'
 
 export default class Snake extends Entity {
   constructor (app, col = 0, row = 0) {
@@ -16,7 +17,7 @@ export default class Snake extends Entity {
     this.moving = false
 
     this.moveHistory = []
-    this.moveHistoryLimit = 60
+    this.moveHistoryLimit = 120
   }
 
   /*
@@ -78,21 +79,30 @@ export default class Snake extends Entity {
   }
 
   paint (layer = 0) {
-    super.paint(layer)
+    // super.paint(layer)
     const c2d = this._app.canvas2d
     this._app.applyCameraTransforms()
-
 
     c2d.fillStyle = this.colour
     c2d.strokeStyle = '#c0c0c0'
     c2d.lineWidth = 1
 
-    this.moveHistory.forEach(item => {
+    if (layer === LAYERS.MIDDLE) {
+      // Draw head
       c2d.beginPath()
-      c2d.arc(item.x, item.y, this.size / 4, 0, 2 * Math.PI)
+      c2d.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI)
       c2d.fill()
       c2d.stroke()
-    })
+
+    } else if (layer === LAYERS.BOTTOM) {
+      //Draw tail
+      this.moveHistory.forEach(item => {
+        c2d.beginPath()
+        c2d.arc(item.x, item.y, this.size / 4, 0, 2 * Math.PI)
+        c2d.fill()
+        c2d.stroke()
+      })
+    }
 
     this._app.undoCameraTransforms()
   }
