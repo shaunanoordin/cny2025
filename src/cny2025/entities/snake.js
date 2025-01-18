@@ -2,6 +2,7 @@ import Entity from '@avo/entity'
 // import { POINTER_STATES, FRAME_DURATION, LAYERS, DIRECTIONS } from '@avo/constants.js'
 import { angleDiff } from '@avo/misc.js'
 import { LAYERS } from '@avo/constants.js'
+import SnakeBody from './snake-body.js'
 
 export default class Snake extends Entity {
   constructor (app, col = 0, row = 0) {
@@ -11,13 +12,17 @@ export default class Snake extends Entity {
     this.colour = '#c04040'
     this.col = col
     this.row = row
+    this.size = 32
 
     this.intent = undefined
     this.action = undefined
     this.moving = false
 
-    this.moveHistory = []
+    this.bodySegments = []  // SnakeBody segments. index 0 is the first body segment after the head (i.e. this object), last item is the tip of the tail.
+    this.moveHistory = []  // Movement history. index 0 is the most recent position of the head (i.e. this object), last item is the oldest position.
     this.moveHistoryLimit = 120
+    this.movementSpeed = 4  // WARNING: don't confuse with Entity.moveSpeed!
+    this.bodySegmentSpacing = 8
   }
 
   /*
@@ -27,6 +32,7 @@ export default class Snake extends Entity {
 
   play () {
     super.play()
+    const app = this._app
 
     // Automatically transform intent into action
     this.action = this.intent
@@ -58,23 +64,35 @@ export default class Snake extends Entity {
 
     // Move the snake!
     if (this.moving) {
-      const SPEED = 4
 
-      this.moveX = SPEED * Math.cos(this.rotation)
-      this.moveY = SPEED * Math.sin(this.rotation)
+      this.moveX = this.movementSpeed * Math.cos(this.rotation)
+      this.moveY = this.movementSpeed * Math.sin(this.rotation)
+
+      // Update the move history
+      this.moveHistory.unshift({
+        moveX: this.moveX,
+        moveY: this.moveY,
+        rotation: this.rotation,
+        x: this.x,
+        y: this.y,
+      })
+
+      // TEST: automatically add snake body segments
+      const expectedSegments = Math.floor(this.moveHistory.length / this.bodySegmentSpacing) - 1
+      if (this.bodySegments.length < expectedSegments) {
+        const newBodySegment = app.addEntity(new SnakeBody(app))
+        this.bodySegments.push(newBodySegment)
+      }
+
+      // Manage snake body
+      this.bodySegments.forEach((bodySegment, i) => {
+        bodySegment.x = this.moveHistory[(i+1) * this.bodySegmentSpacing]?.x || 0
+        bodySegment.y = this.moveHistory[(i+1) * this.bodySegmentSpacing]?.y || 0
+      })
     }
-
-    // Update the move history
-    this.moveHistory.push({
-      moveX: this.moveX,
-      moveY: this.moveY,
-      rotation: this.rotation,
-      x: this.x,
-      y: this.y,
-    })
-
+    
     while (this.moveHistory.length > this.moveHistoryLimit) {
-      this.moveHistory.shift()  // Remove the olderst item in the history
+      this.moveHistory.pop()  // Remove the olderst item in the history
     }
   }
 
@@ -83,12 +101,11 @@ export default class Snake extends Entity {
     const c2d = this._app.canvas2d
     this._app.applyCameraTransforms()
 
-    c2d.fillStyle = this.colour
-    c2d.strokeStyle = '#c0c0c0'
-    c2d.lineWidth = 1
-
     if (layer === LAYERS.MIDDLE) {
       // Draw head
+      c2d.fillStyle = this.colour
+      c2d.strokeStyle = '#404040'
+      c2d.lineWidth = 1
       c2d.beginPath()
       c2d.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI)
       c2d.fill()
@@ -96,6 +113,9 @@ export default class Snake extends Entity {
 
     } else if (layer === LAYERS.BOTTOM) {
       //Draw tail
+      c2d.fillStyle = '#a0a0a0'
+      c2d.strokeStyle = '#c0c0c0'
+      c2d.lineWidth = 1
       this.moveHistory.forEach(item => {
         c2d.beginPath()
         c2d.arc(item.x, item.y, this.size / 4, 0, 2 * Math.PI)
@@ -105,5 +125,14 @@ export default class Snake extends Entity {
     }
 
     this._app.undoCameraTransforms()
+  }
+
+  onCollision (target, collisionCorrection) {
+    super.onCollision(target, collisionCorrection)
+
+    // Ignore collision with first body segment
+    if (target === this.bodySegments[0]) return
+    
+    console.log('BONK')
   }
 }
