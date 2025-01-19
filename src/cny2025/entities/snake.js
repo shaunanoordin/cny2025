@@ -132,7 +132,9 @@ export default class Snake extends Entity {
 
     // Ignore collision with first body segment
     if (target === this.bodySegments[0]) return
-    
-    console.log('BONK')
+
+    if (target.solid) {
+      console.log('BONK')
+    }
   }
 }
