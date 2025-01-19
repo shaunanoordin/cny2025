@@ -1,4 +1,5 @@
 import Rule from '@avo/rule'
+import Coin from '../entities/coin.js'
 
 export default class CNY2025Goals extends Rule {
   constructor (app) {
@@ -6,6 +7,7 @@ export default class CNY2025Goals extends Rule {
     this._type = 'cny2025-goals'
 
     this.score = 0
+    this.spawnCoin()
   }
 
   play () {
@@ -18,5 +20,18 @@ export default class CNY2025Goals extends Rule {
 
   doGameOver () {
     console.log('BOOM! Game over! Score: ', this.score)
+  }
+
+  spawnCoin () {
+    const app = this._app
+    const hero = app.hero
+
+    const coin = new Coin(app, 3, 3) 
+    app.addEntity(coin)
+  }
+
+  increaseScore () {
+    this.score++
+    // this.spawnCoin()
   }
 }

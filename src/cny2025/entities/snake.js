@@ -142,7 +142,9 @@ export default class Snake extends Entity {
     // Ignore collision with first body segment
     if (target === this.bodySegments[0]) return
 
-    if (target.solid) {
+    if (target._type === 'coin') {
+      target.pickup()
+    } else if (target.solid) {
       this.explode()
     }
   }
