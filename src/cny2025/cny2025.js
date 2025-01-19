@@ -4,6 +4,7 @@ import { ROTATIONS } from '@avo/constants.js'
 
 import Snake from './entities/snake.js'
 import SnakeControls from './rules/snake-controls.js'
+import CNY2025Goals from './rules/cny2025-goals.js'
 
 import FloorTile from './tiles/floor-tile.js'
 import WallTile from './tiles/wall-tile.js'
@@ -28,12 +29,12 @@ export default class CNY2025 extends Story {
     const ARENA_WIDTH = 25
     const ARENA_HEIGHT = 25
 
+    // Set up Entities (just the hero, actually)
     app.hero = app.addEntity(new Snake(app, Math.floor(ARENA_WIDTH / 2), Math.floor(ARENA_HEIGHT / 2)))
     app.hero.rotation = ROTATIONS.NORTH
     app.camera.target = app.hero
 
-    app.addRule(new SnakeControls(app))
-
+    // Set up Map
     app.gameMap.tiles = []
     app.gameMap.width = ARENA_WIDTH
     app.gameMap.height = ARENA_HEIGHT
@@ -55,5 +56,10 @@ export default class CNY2025 extends Story {
         }
       }
     }
+
+    // Add Rules
+    // Be sure to only do this after the map and entities have been set up. 
+    app.addRule(new SnakeControls(app))
+    app.addRule(new CNY2025Goals(app))
   }
 }
