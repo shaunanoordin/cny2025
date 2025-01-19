@@ -20,7 +20,7 @@ export default class Snake extends Entity {
 
     this.bodySegments = []  // SnakeBody segments. index 0 is the first body segment after the head (i.e. this object), last item is the tip of the tail.
     this.moveHistory = []  // Movement history. index 0 is the most recent position of the head (i.e. this object), last item is the oldest position.
-    this.moveHistoryLimit = 120
+    this.moveHistoryLimit = 40
     this.movementSpeed = 4  // WARNING: don't confuse with Entity.moveSpeed!
     this.bodySegmentSpacing = 8
   }
@@ -69,7 +69,7 @@ export default class Snake extends Entity {
       this.moveY = this.movementSpeed * Math.sin(this.rotation)
 
       // Update the move history
-      this.moveHistory.unshift({
+      this.moveHistory.unshift({  // Add newest position to the start of the array.
         moveX: this.moveX,
         moveY: this.moveY,
         rotation: this.rotation,
@@ -92,7 +92,7 @@ export default class Snake extends Entity {
     }
     
     while (this.moveHistory.length > this.moveHistoryLimit) {
-      this.moveHistory.pop()  // Remove the olderst item in the history
+      this.moveHistory.pop()  // Remove the oldest position (last item in the array) in the history.
     }
   }
 
