@@ -26,22 +26,31 @@ export default class CNY2025Goals extends Rule {
   spawnCoin () {
     const app = this._app
 
-    // Figure out where to spawn the coin.
+    // Spawn the coin at a random position.
     const { col, row } = this.getRandomPosition()
-
     const coin = new Coin(app, col, row) 
     app.addEntity(coin)
   }
 
   spawnEnemy () {
+    const app = this._app
 
+    // Spawn the enemy at a random position.
+    const { col, row } = this.getRandomPosition()
+    const enemy = new EnemyBasic(app, col, row) 
+    app.addEntity(enemy)
   }
 
   increaseScore () {
     this.score++
     this.spawnCoin()
+    this.spawnEnemy()
   }
 
+  /*
+  Pick a random position that's within the map, and not too close to any other
+  entity, and definitely not too close with the Hero.
+   */
   getRandomPosition () {
     const app = this._app
 
@@ -55,21 +64,27 @@ export default class CNY2025Goals extends Rule {
 
     // Next, pick a random location in the range. 
     // If the location is too close to another entity, pick another location.
-    let col, row
+    let col, row, safety
     do {
       col = Math.floor(Math.random() * (maxCol - minCol) + minCol)
       row = Math.floor(Math.random() * (maxRow - minRow) + minRow)
-    } while (this.isTooCloseToAnyEntity(col, row))
+      safety++  // Loop safety
+    } while (this.isTooCloseToAnyEntity(col, row, safety))
+
+    return { col, row }
   }
 
-  isTooCloseToAnyEntity (col, row) {
+  isTooCloseToAnyEntity (col, row, safety = 1000) {
     const hero = this._app.hero
     const entities = this._app.entities
-    if (col === undefined || row === undefined || !hero || !entities) return false
+    if (col === undefined || row === undefined || !hero || !entities || safety >= 1000) return false
   
     for (let i = 0 ; i < entities.length ; i++) {
       const entity = entities[i]
-      const tooCloseRange = (entity === hero) ? 5 : 2
+      let tooCloseRange = 2
+      if (safety >= 100) tooCloseRange = 1  // If the map is so crowded that we're rerolling for positions too many times, we just say, heck it, spawn anywhere that's not too close to the hero.
+      if (safety >= 500) tooCloseRange = 0
+      if (entity === hero) tooCloseRange = 5
       if (
         col >= entity.col - tooCloseRange
         && col <= entity.col + tooCloseRange
