@@ -2,6 +2,8 @@ import Rule from '@avo/rule'
 import Coin from '../entities/coin.js'
 import EnemyBasic from '../entities/enemy-basic.js'
 
+const TIME_FOR_SHENANIGANS = 120
+
 export default class CNY2025Goals extends Rule {
   constructor (app) {
     super(app)
@@ -9,6 +11,8 @@ export default class CNY2025Goals extends Rule {
 
     this.score = 0
     this.spawnCoin()
+
+    this.eventCounter = 0
   }
 
   play () {
@@ -17,6 +21,16 @@ export default class CNY2025Goals extends Rule {
 
     // If there's no hero, or the hero ain't moving, then do nothing.
     if (hero?.state !== 'moving') return
+
+    // As the player increases their score, throw some curveballs along their way.
+    const difficulty = Math.floor(this.score / 3)
+    if (difficulty > 0) {
+      this.eventCounter++
+      if (this.eventCounter >= TIME_FOR_SHENANIGANS) {
+        for (let i = 0 ; i < difficulty ; i++) this.spawnEnemy()
+        this.eventCounter = 0
+      }
+    }
   }
 
   doGameOver () {
@@ -44,7 +58,6 @@ export default class CNY2025Goals extends Rule {
   increaseScore () {
     this.score++
     this.spawnCoin()
-    this.spawnEnemy()
   }
 
   /*
