@@ -1,6 +1,5 @@
 import Rule from '@avo/rule'
-import Physics from '@avo/physics.js'
-import { LAYERS, POINTER_DEADZONE_RADIUS, POINTER_STATES, TILE_SIZE } from '@avo/constants.js'
+import { POINTER_DEADZONE_RADIUS, POINTER_STATES } from '@avo/constants.js'
 
 export default class SnakeControls extends Rule {
   constructor (app) {

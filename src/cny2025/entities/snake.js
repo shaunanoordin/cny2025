@@ -4,6 +4,8 @@ import { angleDiff } from '@avo/misc.js'
 import { LAYERS } from '@avo/constants.js'
 import SnakeBody from './snake-body.js'
 
+const EXPLOSION_DURATION = 30
+
 export default class Snake extends Entity {
   constructor (app, col = 0, row = 0) {
     super(app)
@@ -17,12 +19,17 @@ export default class Snake extends Entity {
     this.intent = undefined
     this.action = undefined
     this.moving = false
+    this.state = 'idle' // 'idle': snake is waiting for commands. 
+                        // 'moving': snake is moving. You can steer it!
+                        // 'exploding': oops, snake has collided into something and is in the state of exploding!
+                        // 'exploded': snake has exploded.
+    this.stateTransition = 0
 
     this.bodySegments = []  // SnakeBody segments. index 0 is the first body segment after the head (i.e. this object), last item is the tip of the tail.
+    this.bodySegmentSpacing = 8  // Space (in the move history) between each body segment. This can be calculated as 2x movementSpeed.
     this.moveHistory = []  // Movement history. index 0 is the most recent position of the head (i.e. this object), last item is the oldest position.
-    this.moveHistoryLimit = 40
-    this.movementSpeed = 4  // WARNING: don't confuse with Entity.moveSpeed!
-    this.bodySegmentSpacing = 8
+    this.moveHistoryLimit = this.bodySegmentSpacing * 2  // Limits have much movement we're recording. This increases by bodySegmentSpacing every time a coin is picked up.
+    this.movementSpeed = 4  // How fast the snake moves. WARNING: don't confuse with Entity.moveSpeed!
   }
 
   /*
@@ -34,39 +41,25 @@ export default class Snake extends Entity {
     super.play()
     const app = this._app
 
-    // Automatically transform intent into action
-    this.action = this.intent
-    const action = this.action
+    // Check for actions.
+    if (this.state === 'idle' || this.state === 'moving') {
+      // Automatically transform intent into action
+      this.action = this.intent
+      const action = this.action
 
-    // Steer the snake!
-    if (action?.name === 'move') {
-      const directionX = action.directionX || 0
-      const directionY = action.directionY || 0
-      if (!directionX && !directionY) return
+      // Steer the snake!
+      if (action?.name === 'move') {
+        const directionX = action.directionX || 0
+        const directionY = action.directionY || 0
+        if (!directionX && !directionY) return
 
-      this.rotation = Math.atan2(directionY, directionX)
-      this.moving = true
-
-      /*
-      // Experimental rotation limiter
-      const newRotation = Math.atan2(directionY, directionX)
-      if (!this.moving) {  // If snake isn't moving, head off in whatever direction.
-        this.rotation = newRotation
-        this.moving = true
-      } else {  // If snake is already moving, only change direction if the rotation isn't too wild.
-        const ang = angleDiff(this.rotation, newRotation)
-        if (ang >= Math.PI * -0.75 && ang <= Math.PI * 0.75) {
-          this.rotation = newRotation
-        }
+        this.rotation = Math.atan2(directionY, directionX)
+        this.state = 'moving'
       }
-      */
     }
 
     // Move the snake!
-    if (this.moving) {
-
-      this.moveX = this.movementSpeed * Math.cos(this.rotation)
-      this.moveY = this.movementSpeed * Math.sin(this.rotation)
+    if (this.state === 'moving') {
 
       // Update the move history
       this.moveHistory.unshift({  // Add newest position to the start of the array.
@@ -77,22 +70,40 @@ export default class Snake extends Entity {
         y: this.y,
       })
 
-      // TEST: automatically add snake body segments
-      const expectedSegments = Math.floor(this.moveHistory.length / this.bodySegmentSpacing) - 1
+      // Now, move.
+      this.moveX = this.movementSpeed * Math.cos(this.rotation)
+      this.moveY = this.movementSpeed * Math.sin(this.rotation)
+
+      // Spawn new snake body segments, if necessary.
+      const expectedSegments = Math.floor(this.moveHistory.length / this.bodySegmentSpacing)
       if (this.bodySegments.length < expectedSegments) {
         const newBodySegment = app.addEntity(new SnakeBody(app))
         this.bodySegments.push(newBodySegment)
       }
 
-      // Manage snake body
+      // Manage snake body segments. They should follow the head.
       this.bodySegments.forEach((bodySegment, i) => {
         bodySegment.x = this.moveHistory[(i+1) * this.bodySegmentSpacing]?.x || 0
         bodySegment.y = this.moveHistory[(i+1) * this.bodySegmentSpacing]?.y || 0
       })
+
+      // Cleanup.
+      while (this.moveHistory.length > this.moveHistoryLimit) {
+        this.moveHistory.pop()  // Remove the oldest position (last item in the array) in the history.
+      }
     }
-    
-    while (this.moveHistory.length > this.moveHistoryLimit) {
-      this.moveHistory.pop()  // Remove the oldest position (last item in the array) in the history.
+
+    // Explode the snake!
+    if (this.state === 'exploding') {
+      this.colour = '#e0c040'
+      this.stateTransition++
+      if (this.stateTransition >= EXPLOSION_DURATION) {        
+        this.state = 'exploded'
+        const cny2025goals = app.rules.get('cny2025-goals')
+        cny2025goals?.doGameOver()
+      }
+    } else if (this.state === 'exploded') {
+      this.colour = '#602020'
     }
   }
 
@@ -133,8 +144,23 @@ export default class Snake extends Entity {
     // Ignore collision with first body segment
     if (target === this.bodySegments[0]) return
 
-    if (target.solid) {
-      console.log('BONK')
+    if (target._type === 'coin') {
+      if (target.state === 'idle') {
+        this.moveHistoryLimit += this.bodySegmentSpacing
+      }
+      target.pickup()
+    } else if (target.solid) {
+      this.explode()
     }
+  }
+
+  /*
+  Snake has collided 
+   */
+  explode () {
+    if (this.state !== 'moving') return
+    console.log('BONK')
+    this.state = 'exploding'
+    this.stateTransition = 0
   }
 }
