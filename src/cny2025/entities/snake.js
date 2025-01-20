@@ -61,9 +61,6 @@ export default class Snake extends Entity {
     // Move the snake!
     if (this.state === 'moving') {
 
-      this.moveX = this.movementSpeed * Math.cos(this.rotation)
-      this.moveY = this.movementSpeed * Math.sin(this.rotation)
-
       // Update the move history
       this.moveHistory.unshift({  // Add newest position to the start of the array.
         moveX: this.moveX,
@@ -73,19 +70,24 @@ export default class Snake extends Entity {
         y: this.y,
       })
 
-      // TEST: automatically add snake body segments
-      const expectedSegments = Math.floor(this.moveHistory.length / this.bodySegmentSpacing) - 1
+      // Now, move.
+      this.moveX = this.movementSpeed * Math.cos(this.rotation)
+      this.moveY = this.movementSpeed * Math.sin(this.rotation)
+
+      // Spawn new snake body segments, if necessary.
+      const expectedSegments = Math.floor(this.moveHistory.length / this.bodySegmentSpacing)
       if (this.bodySegments.length < expectedSegments) {
         const newBodySegment = app.addEntity(new SnakeBody(app))
         this.bodySegments.push(newBodySegment)
       }
 
-      // Manage snake body
+      // Manage snake body segments. They should follow the head.
       this.bodySegments.forEach((bodySegment, i) => {
         bodySegment.x = this.moveHistory[(i+1) * this.bodySegmentSpacing]?.x || 0
         bodySegment.y = this.moveHistory[(i+1) * this.bodySegmentSpacing]?.y || 0
       })
 
+      // Cleanup.
       while (this.moveHistory.length > this.moveHistoryLimit) {
         this.moveHistory.pop()  // Remove the oldest position (last item in the array) in the history.
       }
