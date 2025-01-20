@@ -1,35 +1,25 @@
 import Entity from '@avo/entity'
-// import { POINTER_STATES, FRAME_DURATION, LAYERS, DIRECTIONS } from '@avo/constants.js'
-import { angleDiff } from '@avo/misc.js'
-import { LAYERS } from '@avo/constants.js'
-import SnakeBody from './snake-body.js'
 
+const SPAWN_DURATION = 30
 const EXPLOSION_DURATION = 30
 
-export default class Snake extends Entity {
+export default class EnemyBasic extends Entity {
   constructor (app, col = 0, row = 0) {
     super(app)
-    this._type = 'snake'
+    this._type = 'enemy-basic'
 
-    this.colour = '#c04040'
+    this.colour = '#40c040'
     this.col = col
     this.row = row
     this.size = 32
+    this.solid = false
 
-    this.intent = undefined
-    this.action = undefined
-    this.moving = false
-    this.state = 'idle' // 'idle': snake is waiting for commands. 
-                        // 'moving': snake is moving. You can steer it!
-                        // 'exploding': oops, snake has collided into something and is in the state of exploding!
-                        // 'exploded': snake has exploded.
+    this.state = 'spawning' // 'spawning': enemy is in the process of spawning. 
+                            // 'moving': enemy is moving.
+                            // 'exploding': enemy has collided into something and is in the state of exploding!
+                            // 'exploded': enemy has exploded.
     this.stateTransition = 0
-
-    this.bodySegments = []  // SnakeBody segments. index 0 is the first body segment after the head (i.e. this object), last item is the tip of the tail.
-    this.bodySegmentSpacing = 8  // Space (in the move history) between each body segment. This can be calculated as 2x movementSpeed.
-    this.moveHistory = []  // Movement history. index 0 is the most recent position of the head (i.e. this object), last item is the oldest position.
-    this.moveHistoryLimit = this.bodySegmentSpacing * 2  // Limits have much movement we're recording. This increases by bodySegmentSpacing every time a coin is picked up.
-    this.movementSpeed = 4  // How fast the snake moves. WARNING: don't confuse with Entity.moveSpeed!
+    this.movementSpeed = 4  // How fast the enemy moves. WARNING: don't confuse with Entity.moveSpeed!
   }
 
   /*
@@ -40,6 +30,30 @@ export default class Snake extends Entity {
   play () {
     super.play()
     const app = this._app
+
+    if (this.state === 'spawning') {
+      this.colour = '#408080'
+      this.solid = false
+      this.stateTransition++
+      if (this.stateTransition >= SPAWN_DURATION) {        
+        this.state = 'moving'
+      }
+
+    } else if (this.state === 'moving') {
+      this.colour = '#40c080'
+      this.solid = true
+
+    } else if (this.state === 'exploding') {
+      this.colour = '#408080'
+      this.solid = false
+      this.stateTransition++
+      if (this.stateTransition >= EXPLOSION_DURATION) {        
+        this.state = 'exploded'
+      }
+
+    } else if (this.state === 'exploded') {
+      this._expired = true
+    }
 
     // Check for actions.
     if (this.state === 'idle' || this.state === 'moving') {
@@ -107,59 +121,19 @@ export default class Snake extends Entity {
     }
   }
 
-  paint (layer = 0) {
-    // super.paint(layer)
-    const c2d = this._app.canvas2d
-    this._app.applyCameraTransforms()
-
-    if (layer === LAYERS.MIDDLE) {
-      // Draw head
-      c2d.fillStyle = this.colour
-      c2d.strokeStyle = '#404040'
-      c2d.lineWidth = 1
-      c2d.beginPath()
-      c2d.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI)
-      c2d.fill()
-      c2d.stroke()
-
-    } else if (layer === LAYERS.BOTTOM) {
-      //Draw tail
-      c2d.fillStyle = '#a0a0a0'
-      c2d.strokeStyle = '#c0c0c0'
-      c2d.lineWidth = 1
-      this.moveHistory.forEach(item => {
-        c2d.beginPath()
-        c2d.arc(item.x, item.y, this.size / 4, 0, 2 * Math.PI)
-        c2d.fill()
-        c2d.stroke()
-      })
-    }
-
-    this._app.undoCameraTransforms()
-  }
-
   onCollision (target, collisionCorrection) {
     super.onCollision(target, collisionCorrection)
 
-    // Ignore collision with first body segment
-    if (target === this.bodySegments[0]) return
-
-    if (target._type === 'coin') {
-      if (target.state === 'idle') {
-        this.moveHistoryLimit += this.bodySegmentSpacing
-      }
-      target.pickup()
-    } else if (target.solid) {
+    if (target.solid) {
       this.explode()
     }
   }
 
   /*
-  Snake has collided with something solid and needs to go boom.
+  Enemy has collided with something solid and needs to go boom. 
    */
   explode () {
     if (this.state !== 'moving') return
-    console.log('BONK')
     this.state = 'exploding'
     this.stateTransition = 0
   }

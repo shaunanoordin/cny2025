@@ -1,5 +1,6 @@
 import Rule from '@avo/rule'
 import Coin from '../entities/coin.js'
+import EnemyBasic from '../entities/enemy-basic.js'
 
 export default class CNY2025Goals extends Rule {
   constructor (app) {
@@ -24,11 +25,28 @@ export default class CNY2025Goals extends Rule {
 
   spawnCoin () {
     const app = this._app
-    const hero = app.hero
 
     // Figure out where to spawn the coin.
+    const { col, row } = this.getRandomPosition()
 
-    // First, consider all possible ranges in the map.
+    const coin = new Coin(app, col, row) 
+    app.addEntity(coin)
+  }
+
+  spawnEnemy () {
+
+  }
+
+  increaseScore () {
+    this.score++
+    this.spawnCoin()
+  }
+
+  getRandomPosition () {
+    const app = this._app
+
+    // Calculate acceptable range of positions.
+    // Basically, the random position must be within the game map. 
     const mapEdgeBuffer = 2
     const minCol = 0 + mapEdgeBuffer
     const maxCol = app.gameMap.width - 1 - mapEdgeBuffer
@@ -36,35 +54,32 @@ export default class CNY2025Goals extends Rule {
     const maxRow = app.gameMap.height - 1 - mapEdgeBuffer
 
     // Next, pick a random location in the range. 
-    // If the location is too close to the hero, pick another.
+    // If the location is too close to another entity, pick another location.
     let col, row
     do {
       col = Math.floor(Math.random() * (maxCol - minCol) + minCol)
       row = Math.floor(Math.random() * (maxRow - minRow) + minRow)
-    } while (isTooCloseToHero(col, row, hero))
-
-    const coin = new Coin(app, col, row) 
-    app.addEntity(coin)
+    } while (this.isTooCloseToAnyEntity(col, row))
   }
 
-  increaseScore () {
-    this.score++
-    this.spawnCoin()
+  isTooCloseToAnyEntity (col, row) {
+    const hero = this._app.hero
+    const entities = this._app.entities
+    if (col === undefined || row === undefined || !hero || !entities) return false
+  
+    for (let i = 0 ; i < entities.length ; i++) {
+      const entity = entities[i]
+      const tooCloseRange = (entity === hero) ? 5 : 2
+      if (
+        col >= entity.col - tooCloseRange
+        && col <= entity.col + tooCloseRange
+        && row >= entity.row - tooCloseRange
+        && row <= entity.row + tooCloseRange
+      ) {
+        return true
+      }
+    }
+  
+    return false
   }
-}
-
-function isTooCloseToHero (col, row, hero) {
-  if (col === undefined || row === undefined || !hero) return false
-
-  const tooCloseRange = 5
-  if (
-    col >= hero.col - tooCloseRange
-    && col <= hero.col + tooCloseRange
-    && row >= hero.row - tooCloseRange
-    && row <= hero.row + tooCloseRange
-  ) {
-    return true
-  }
-
-  return false
 }
