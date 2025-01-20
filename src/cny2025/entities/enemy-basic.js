@@ -29,7 +29,8 @@ export default class EnemyBasic extends Entity {
 
   play () {
     super.play()
-    const app = this._app
+
+    const hero = this._app.hero
 
     if (this.state === 'spawning') {
       this.colour = '#408080'
@@ -39,9 +40,19 @@ export default class EnemyBasic extends Entity {
         this.state = 'moving'
       }
 
+      // Aim self the hero
+      let distX = hero.x - this.x
+      let distY = hero.y - this.y
+      if (distX !== 0 || distY !== 0) {
+        this.rotation = Math.atan2(distY, distX)
+      }
+
     } else if (this.state === 'moving') {
       this.colour = '#40c080'
       this.solid = true
+
+      this.moveX = this.movementSpeed * Math.cos(this.rotation)
+      this.moveY = this.movementSpeed * Math.sin(this.rotation)
 
     } else if (this.state === 'exploding') {
       this.colour = '#408080'
