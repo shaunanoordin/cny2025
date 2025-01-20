@@ -26,10 +26,10 @@ export default class Snake extends Entity {
     this.stateTransition = 0
 
     this.bodySegments = []  // SnakeBody segments. index 0 is the first body segment after the head (i.e. this object), last item is the tip of the tail.
+    this.bodySegmentSpacing = 8  // Space (in the move history) between each body segment. This can be calculated as 2x movementSpeed.
     this.moveHistory = []  // Movement history. index 0 is the most recent position of the head (i.e. this object), last item is the oldest position.
-    this.moveHistoryLimit = 40
-    this.movementSpeed = 4  // WARNING: don't confuse with Entity.moveSpeed!
-    this.bodySegmentSpacing = 8
+    this.moveHistoryLimit = this.bodySegmentSpacing * 2  // Limits have much movement we're recording. This increases by bodySegmentSpacing every time a coin is picked up.
+    this.movementSpeed = 4  // How fast the snake moves. WARNING: don't confuse with Entity.moveSpeed!
   }
 
   /*
@@ -145,6 +145,9 @@ export default class Snake extends Entity {
     if (target === this.bodySegments[0]) return
 
     if (target._type === 'coin') {
+      if (target.state === 'idle') {
+        this.moveHistoryLimit += this.bodySegmentSpacing
+      }
       target.pickup()
     } else if (target.solid) {
       this.explode()
