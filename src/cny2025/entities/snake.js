@@ -155,7 +155,7 @@ export default class Snake extends Entity {
   }
 
   /*
-  Snake has collided 
+  Snake has collided with something solid and needs to go boom.
    */
   explode () {
     if (this.state !== 'moving') return
