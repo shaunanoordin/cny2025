@@ -17,6 +17,9 @@ export default class CNY2025 extends Story {
       // "hero": new ImageAsset('assets/avo-sprites-2024-08-samiel.png'),
       // "map": new ImageAsset('assets/avo-sprites-2024-09-simple-map-tiles.png'),
     }
+
+    // Open home menu when the game starts
+    app.setHomeMenu(true)
   }
 
   start () {
