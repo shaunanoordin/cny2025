@@ -12,11 +12,19 @@ import WallTile from './tiles/wall-tile.js'
 export default class CNY2025 extends Story {
   constructor (app) {
     super(app)
-    
+
+    this.html = {
+
+    }
     this.assets = {
       // "hero": new ImageAsset('assets/avo-sprites-2024-08-samiel.png'),
       // "map": new ImageAsset('assets/avo-sprites-2024-09-simple-map-tiles.png'),
     }
+
+    // Add event listener
+    this.startButton_onClick = this.startButton_onClick.bind(this)
+    document.getElementById('cny2025-start-button').addEventListener('click', this.startButton_onClick)
+    // ⚠️ NOTE: since the Story doesn't ever unload/deconstruct, there's no corresponding .removeEventListener()
 
     // Open home menu when the game starts
     app.setHomeMenu(true)
@@ -64,5 +72,9 @@ export default class CNY2025 extends Story {
     // Be sure to only do this after the map and entities have been set up. 
     app.addRule(new SnakeControls(app))
     app.addRule(new CNY2025Goals(app))
+  }
+
+  startButton_onClick () {
+    this._app.setHomeMenu(false)
   }
 }
