@@ -6,7 +6,7 @@
   font-family: "Source Code Pro", monospace;
   font-size: 16px;
   background: #fff;
-  color: #444;
+  color: #404040;
 }
 
 html,
@@ -19,11 +19,11 @@ body {
 }
 
 a {
-  color: #c44;
+  color: #c04040;
   text-decoration: none;
 }
 a:hover {
-  color: #e66;
+  color: #e06060;
 }
 
 table {
@@ -32,7 +32,7 @@ table {
 }
 table td,
 table th {
-  border: 1px solid #444;
+  border: 1px solid #404040;
 }
 
 #app {
@@ -49,8 +49,8 @@ table th {
   font-size: 0.5rem;
   flex: 0 0 auto;
   padding: 0.5rem;
-  background: #c44;
-  color: #eee;
+  background: #c04040;
+  color: #e0e0e0;
 }
 
 #app > header h1 {
@@ -67,7 +67,7 @@ table th {
 }
 
 #app > main {
-  background: #444 url("../assets/simple-bg.png");
+  background: #404040 url("../assets/simple-bg.png");
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
@@ -132,6 +132,45 @@ table th {
 #app > main #button-reload {
   top: 3.5em;
   left: 0.5em;
+}
+
+/*
+CNY2025!
+ */
+#app.cny2025 > main #home-menu {
+  font-family: sans-serif;
+}
+#app.cny2025 > main #home-menu > div {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  border: 4px solid #c04040;
+}
+#app.cny2025 > main #cny2025-card {
+  max-width: 100%;
+}
+#app.cny2025 > main #cny2025-start-panel {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1em;
+}
+#app.cny2025 > main #cny2025-start-button {
+  cursor: pointer;
+  color: #fff;
+  background: #c04040;
+  border: 2px solid #c0c0c0;
+  border-radius: 1rem;
+  box-shadow: 0.1rem 0.1rem 0 rgba(0, 0, 0, 0.5);
+  padding: 0.5em 2em;
+}
+#app.cny2025 > main #cny2025-start-button:hover {
+  border: 2px solid #fff;
+}
+#app.cny2025 > main #cny2025-start-button:active {
+  border: 2px solid #808080;
+}
+#app.cny2025 > main #cny2025-credits {
+  font-size: 0.5em;
 }
 
 /*# sourceMappingURL=main.css.map */
