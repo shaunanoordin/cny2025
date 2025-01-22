@@ -151,10 +151,23 @@ CNY2025!
 }
 #app.cny2025 > main #cny2025-start-panel {
   display: flex;
+  justify-content: center;
+  margin-bottom: 1em;
 }
 #app.cny2025 > main #cny2025-start-button {
-  flex: 1 1 auto;
   cursor: pointer;
+  color: #fff;
+  background: #c04040;
+  border: 2px solid #c0c0c0;
+  border-radius: 1rem;
+  box-shadow: 0.1rem 0.1rem 0 rgba(0, 0, 0, 0.5);
+  padding: 0.5em 2em;
+}
+#app.cny2025 > main #cny2025-start-button:hover {
+  border: 2px solid #fff;
+}
+#app.cny2025 > main #cny2025-start-button:active {
+  border: 2px solid #808080;
 }
 #app.cny2025 > main #cny2025-credits {
   font-size: 0.5em;

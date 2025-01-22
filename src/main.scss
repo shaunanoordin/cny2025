@@ -182,11 +182,26 @@ CNY2025!
 
   #cny2025-start-panel {
     display: flex;
+    justify-content: center;
+    margin-bottom: 1em;
   }
 
   #cny2025-start-button {
-    flex: 1 1 auto;
     cursor: pointer;
+    color: $white;
+    background: $primary;
+    border: 2px solid $light-grey;
+    border-radius: 1rem;
+    box-shadow: 0.1rem 0.1rem 0 rgba(0, 0, 0, 0.5);
+    padding: 0.5em 2em;
+    
+    &:hover {
+      border: 2px solid $white;
+    }
+
+    &:active {
+      border: 2px solid $grey;
+    }
   }
 
   #cny2025-credits {
