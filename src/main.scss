@@ -1,13 +1,13 @@
 $white: #fff;
-$light: #eee;
-$light-grey: #ccc;
-$grey: #888;
-$dark-grey: #666;
-$dark: #444;
+$light: #e0e0e0;
+$light-grey: #c0c0c0;
+$grey: #808080;
+$dark-grey: #606060;
+$dark: #404040;
 $black: #000;
 
-$primary: #c44;
-$primary-highlight: #e66;
+$primary: #c04040;
+$primary-highlight: #e06060;
 
 * {
   box-sizing: border-box;
@@ -158,5 +158,38 @@ table {
   #button-reload {
     top: 3.5em;
     left: 0.5em;
+  }
+}
+
+/*
+CNY2025!
+ */
+#app.cny2025 > main {
+  #home-menu {
+    font-family: sans-serif;
+
+    > div {
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      border: 4px solid $primary;
+    }
+  }
+  
+  #cny2025-card {
+    max-width: 100%;
+  }
+
+  #cny2025-start-panel {
+    display: flex;
+  }
+
+  #cny2025-start-button {
+    flex: 1 1 auto;
+    cursor: pointer;
+  }
+
+  #cny2025-credits {
+    font-size: 0.5em;
   }
 }
