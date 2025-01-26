@@ -168,6 +168,7 @@ export default class Entity {
     spriteOffsetX: undefined,
     spriteOffsetY: undefined,
     spriteScale: undefined,
+    spriteRotation: undefined,
   }) {
     const app = this._app
     const c2d = app.canvas2d
@@ -185,6 +186,11 @@ export default class Entity {
     c2d.translate(this.x, this.y)  // 1. This moves the 'drawing origin' to match the position of (the centre of) the Entity.
     c2d.scale(flipX * scale, scale)  // 2. This ensures the sprite scales with the 'drawing origin' as the anchor point.
     // c2d.rotate(this.rotation)  // 3. If we wanted to, we could rotate the sprite around the 'drawing origin'.
+
+    // CNY2025
+    if (args?.spriteRotation !== undefined) {
+      c2d.rotate(args?.spriteRotation)
+    }
 
     // 4. tgtX and tgtY specify where to draw the sprite, relative to the 'drawing origin'.
     let tgtX = args?.spriteOffsetX ?? this.spriteOffsetX  // Usually this is sizeX * -0.5, to centre-align.

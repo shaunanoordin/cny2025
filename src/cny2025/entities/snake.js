@@ -1,7 +1,5 @@
 import Entity from '@avo/entity'
-// import { POINTER_STATES, FRAME_DURATION, LAYERS, DIRECTIONS } from '@avo/constants.js'
-import { angleDiff } from '@avo/misc.js'
-import { LAYERS } from '@avo/constants.js'
+import { LAYERS, ROTATIONS } from '@avo/constants.js'
 import SnakeBody from './snake-body.js'
 
 const EXPLOSION_DURATION = 30
@@ -16,6 +14,7 @@ export default class Snake extends Entity {
     this.row = row
     this.size = 32
 
+    this.rotation = ROTATIONS.SOUTH
     this.intent = undefined
     this.action = undefined
     this.moving = false
@@ -30,6 +29,13 @@ export default class Snake extends Entity {
     this.moveHistory = []  // Movement history. index 0 is the most recent position of the head (i.e. this object), last item is the oldest position.
     this.moveHistoryLimit = this.bodySegmentSpacing * 2  // Limits have much movement we're recording. This increases by bodySegmentSpacing every time a coin is picked up.
     this.movementSpeed = 4  // How fast the snake moves. WARNING: don't confuse with Entity.moveSpeed!
+
+    this.spriteSheet = app.assets['cny2025'].img
+    this.spriteSizeX = 16
+    this.spriteSizeY = 16
+    this.spriteScale = 2
+    this.spriteOffsetX = -8
+    this.spriteOffsetY = -8
   }
 
   /*
@@ -110,20 +116,26 @@ export default class Snake extends Entity {
   paint (layer = 0) {
     // super.paint(layer)
     const c2d = this._app.canvas2d
-    this._app.applyCameraTransforms()
 
     if (layer === LAYERS.MIDDLE) {
       // Draw head
+      /*
       c2d.fillStyle = this.colour
       c2d.strokeStyle = '#404040'
       c2d.lineWidth = 1
       c2d.beginPath()
       c2d.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI)
       c2d.fill()
-      c2d.stroke()
+      c2d.stroke()*/
+      this.paintSprite({
+        spriteCol: 0,
+        spriteRow: 0,
+        spriteRotation: this.rotation - Math.PI / 2
+      })
 
     } else if (layer === LAYERS.BOTTOM) {
       //Draw tail
+      this._app.applyCameraTransforms()
       c2d.fillStyle = '#a0a0a0'
       c2d.strokeStyle = '#c0c0c0'
       c2d.lineWidth = 1
@@ -133,9 +145,8 @@ export default class Snake extends Entity {
         c2d.fill()
         c2d.stroke()
       })
+      this._app.undoCameraTransforms()
     }
-
-    this._app.undoCameraTransforms()
   }
 
   onCollision (target, collisionCorrection) {

@@ -41,7 +41,6 @@ export default class CNY2025 extends Story {
 
     // Set up Entities (just the hero, actually)
     app.hero = app.addEntity(new Snake(app, Math.floor(ARENA_WIDTH / 2), Math.floor(ARENA_HEIGHT / 2)))
-    app.hero.rotation = ROTATIONS.NORTH
     app.camera.target = app.hero
 
     // Set up Map
