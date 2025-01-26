@@ -8,6 +8,7 @@ export default class SnakeBody extends Entity {
 
     this.colour = '#804040'
     this.size = 32
+    console.log(this.x, this.y)
   }
 
   /*
@@ -20,6 +21,10 @@ export default class SnakeBody extends Entity {
   }
 
   paint (layer = 0) {
+    // Bug fix: when a snake body segment first spawns, it blinks into existence
+    // just outside of the arena for a single frame.
+    if (this.x <= 0 || this.y <= 0) return
+
     const c2d = this._app.canvas2d
     this._app.applyCameraTransforms()
 
