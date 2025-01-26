@@ -337,6 +337,8 @@ export default class AvO {
     if (homeMenu) {
       this.html.homeMenu.style.visibility = 'visible'
       this.html.buttonReload.style.visibility = 'hidden'
+      // CNY2025
+      document.getElementById('cny2025-start-button')?.focus()
     } else {
       this.html.homeMenu.style.visibility = 'hidden'
       this.html.buttonReload.style.visibility = 'visible'
@@ -356,7 +358,7 @@ export default class AvO {
       div.style.visibility = 'visible'
     } else {
       div.style.visibility = 'hidden'
-      this.html.main.focus()
+      //CNY2025 this.html.main.focus()
     }
   }
 
