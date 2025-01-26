@@ -17,6 +17,13 @@ export default class CNY2025Goals extends Rule {
 
     this.gameOver = false
     this.animationCounter = 0
+
+    this.spriteSheet = app.assets['cny2025'].img
+    this.spriteSizeX = 16  // Size of each sprite on the sprite sheet.
+    this.spriteSizeY = 16
+    this.spriteScale = 2  // Scale of the sprite when paint()ed.
+    this.spriteOffsetX = -8  // Offset of the sprite when paint()ed.
+    this.spriteOffsetY = -8  // Usually half of sprite size, to centre-align.
   }
 
   play () {
@@ -53,24 +60,63 @@ export default class CNY2025Goals extends Rule {
 
     // Otherwise, display the current score
     } else if (hero.state === 'moving') {
-      const X_OFFSET = 16
-      const Y_OFFSET = 16
-      const LEFT = X_OFFSET
-      const RIGHT = this._app.canvasWidth - X_OFFSET
-      const TOP = Y_OFFSET
-      const BOTTOM = this._app.canvasHeight - Y_OFFSET
-      c2d.font = '2em Arial'
-      c2d.textBaseline = 'top'
+      const LEFT = 64
+      const TOP = 32
+      c2d.font = '2em monospace'
+      c2d.textBaseline = 'middle'
       c2d.lineWidth = 8
 
-      let text = `Coins: ${this.score}`
+      let text = this.score
       c2d.textAlign = 'left'
       c2d.strokeStyle = '#fff'
       c2d.strokeText(text, LEFT, TOP)
       c2d.fillStyle = '#C0A040'
       c2d.fillText(text, LEFT, TOP)
+
+      this.paintSprite(32, 32, {
+        spriteCol: 0,
+        spriteRow: 1,
+        spriteScale: 3,
+      })
     }
   }
+
+  paintSprite (x, y, args = {
+      spriteCol: undefined,
+      spriteRow: undefined,
+      spriteOffsetX: undefined,
+      spriteOffsetY: undefined,
+      spriteScale: undefined,
+      spriteSizeX: undefined,
+      spriteSizeY: undefined,
+      spriteRotation: undefined,
+    }) {
+      const app = this._app
+      const c2d = app.canvas2d
+      const spriteSheet = this.spriteSheet
+      if (!spriteSheet) return
+
+      c2d.save()
+  
+      const sizeX = args?.spriteSizeX ?? this.spriteSizeX
+      const sizeY = args?.spriteSizeY ?? this.spriteSizeY
+      const srcX = (args?.spriteCol ?? 0) * sizeX
+      const srcY = (args?.spriteRow ?? 0) * sizeY
+      const scale = args?.spriteScale ?? this.spriteScale
+  
+      c2d.translate(x, y)
+      c2d.scale(scale, scale)
+  
+      let tgtX = args?.spriteOffsetX ?? this.spriteOffsetX
+      let tgtY = args?.spriteOffsetY ?? this.spriteOffsetY
+  
+      c2d.drawImage(spriteSheet,
+        srcX, srcY, sizeX, sizeY,
+        tgtX, tgtY, sizeX, sizeY
+      )
+
+      c2d.restore()
+    }
 
   doGameOver () {
     console.log('BOOM! Game over! Score: ', this.score)
