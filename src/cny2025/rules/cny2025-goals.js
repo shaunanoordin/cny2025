@@ -1,6 +1,7 @@
 import Rule from '@avo/rule'
 import Coin from '../entities/coin.js'
 import EnemyBasic from '../entities/enemy-basic.js'
+import { LAYERS } from '@avo/constants.js'
 
 const TIME_FOR_SHENANIGANS = 120
 
@@ -13,6 +14,9 @@ export default class CNY2025Goals extends Rule {
     this.spawnCoin()
 
     this.eventCounter = 0
+
+    this.gameOver = false
+    this.animationCounter = 0
   }
 
   play () {
@@ -30,6 +34,41 @@ export default class CNY2025Goals extends Rule {
         for (let i = 0 ; i < difficulty ; i++) this.spawnEnemy()
         this.eventCounter = 0
       }
+    }
+  }
+
+  paint (layer = 0) {
+    if (layer !== LAYERS.OVERLAY) return
+
+    const c2d = this._app.canvas2d
+    const hero = this._app.hero
+
+    // If the game is over, display the score.
+    if (this.gameOver) {
+      // TODO
+
+    // If the hero hasn't moved, display the controls.
+    } else if (hero && hero.state !== 'moving') {
+      // TODO
+
+    // Otherwise, display the current score
+    } else if (hero.state === 'moving') {
+      const X_OFFSET = 16
+      const Y_OFFSET = 16
+      const LEFT = X_OFFSET
+      const RIGHT = this._app.canvasWidth - X_OFFSET
+      const TOP = Y_OFFSET
+      const BOTTOM = this._app.canvasHeight - Y_OFFSET
+      c2d.font = '2em Arial'
+      c2d.textBaseline = 'top'
+      c2d.lineWidth = 8
+
+      let text = `Coins: ${this.score}`
+      c2d.textAlign = 'left'
+      c2d.strokeStyle = '#fff'
+      c2d.strokeText(text, LEFT, TOP)
+      c2d.fillStyle = '#C0A040'
+      c2d.fillText(text, LEFT, TOP)
     }
   }
 

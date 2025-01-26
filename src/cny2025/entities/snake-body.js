@@ -8,7 +8,6 @@ export default class SnakeBody extends Entity {
 
     this.colour = '#804040'
     this.size = 32
-    console.log(this.x, this.y)
   }
 
   /*
