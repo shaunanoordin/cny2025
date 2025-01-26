@@ -168,6 +168,8 @@ export default class Entity {
     spriteOffsetX: undefined,
     spriteOffsetY: undefined,
     spriteScale: undefined,
+    spriteSizeX: undefined,
+    spriteSizeY: undefined,
     spriteRotation: undefined,
   }) {
     const app = this._app
@@ -176,10 +178,10 @@ export default class Entity {
 
     app.applyCameraTransforms()
 
-    const srcX = (args?.spriteCol ?? this.getSpriteCol()) * this.spriteSizeX
-    const srcY = (args?.spriteRow ?? this.getSpriteRow()) * this.spriteSizeY
-    const sizeX = this.spriteSizeX
-    const sizeY = this.spriteSizeY
+    const sizeX = args?.spriteSizeX ?? this.spriteSizeX
+    const sizeY = args?.spriteSizeY ?? this.spriteSizeY
+    const srcX = (args?.spriteCol ?? this.getSpriteCol()) * sizeX
+    const srcY = (args?.spriteRow ?? this.getSpriteRow()) * sizeY
     const scale = args?.spriteScale ?? this.spriteScale
     const flipX = (this.spriteFlipEastToWest && this.getSpriteDirection() === DIRECTIONS.WEST) ? -1 : 1
 

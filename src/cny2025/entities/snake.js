@@ -115,27 +115,56 @@ export default class Snake extends Entity {
 
   paint (layer = 0) {
     // super.paint(layer)
+    const app = this._app
     const c2d = this._app.canvas2d
+    const state = this.state
 
-    if (layer === LAYERS.MIDDLE) {
-      // Draw head
-      /*
-      c2d.fillStyle = this.colour
-      c2d.strokeStyle = '#404040'
-      c2d.lineWidth = 1
-      c2d.beginPath()
-      c2d.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI)
-      c2d.fill()
-      c2d.stroke()*/
-      this.paintSprite({
-        spriteCol: 0,
-        spriteRow: 0,
-        spriteRotation: this.rotation - Math.PI / 2
-      })
+    if (state === 'idle' || state === 'moving') {
+      if (layer === LAYERS.MIDDLE) {
+        // Draw head
+        this.paintSprite({
+          spriteCol: 0,
+          spriteRow: 0,
+          spriteRotation: this.rotation - Math.PI / 2
+        })
+      }
 
-    } else if (layer === LAYERS.BOTTOM) {
+    } else if (state === 'exploding') {
+      //Draw explosion
+      if (layer === LAYERS.TOP) {
+        let spriteCol = 0
+        if (this.stateTransition > EXPLOSION_DURATION * 0.3) spriteCol = 1
+        if (this.stateTransition > EXPLOSION_DURATION * 0.5) spriteCol = 2
+        if (this.stateTransition > EXPLOSION_DURATION * 0.7) spriteCol = 3
+
+        this.paintSprite({
+          spriteCol,
+          spriteRow: 1,
+          spriteSizeX: 32,
+          spriteSizeY: 32,
+          spriteOffsetX: -16,
+          spriteOffsetY: -16, 
+        })
+      }
+
+    } else {
+      // Draw circle
+      if (layer === LAYERS.MIDDLE) {
+        app.applyCameraTransforms()
+        c2d.fillStyle = '#606060'
+        c2d.strokeStyle = '#404040'
+        c2d.lineWidth = 1
+        c2d.beginPath()
+        c2d.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI)
+        c2d.fill()
+        c2d.stroke()
+        app.undoCameraTransforms()
+      }
+    }
+
+    if (layer === LAYERS.BOTTOM) {
       //Draw tail
-      this._app.applyCameraTransforms()
+      app.applyCameraTransforms()
       c2d.fillStyle = '#a0a0a0'
       c2d.strokeStyle = '#c0c0c0'
       c2d.lineWidth = 1
@@ -145,7 +174,7 @@ export default class Snake extends Entity {
         c2d.fill()
         c2d.stroke()
       })
-      this._app.undoCameraTransforms()
+      app.undoCameraTransforms()
     }
   }
 
