@@ -165,14 +165,22 @@ table {
 CNY2025!
  */
 #app.cny2025 > main {
+  #canvas {
+    background: #804040;
+  }
+
   #home-menu {
     font-family: sans-serif;
+    text-align: center;
 
     > div {
       margin: 0;
       height: 100%;
       width: 100%;
       border: 4px solid $primary;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
   }
   

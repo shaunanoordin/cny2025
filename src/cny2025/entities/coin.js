@@ -1,5 +1,7 @@
 import Entity from '@avo/entity'
+import { LAYERS } from '@avo/constants.js'
 
+const SPIN_DURATION = 50
 const PICKEDUP_DURATION = 30
 
 export default class COIN extends Entity {
@@ -16,6 +18,13 @@ export default class COIN extends Entity {
     this.state = 'idle' // 'idle': coin is sitting around. 
                         // 'pickedup': coin has been picked up.
     this.stateTransition = 0
+
+    this.spriteSheet = app.assets['cny2025'].img
+    this.spriteSizeX = 16
+    this.spriteSizeY = 16
+    this.spriteScale = 2
+    this.spriteOffsetX = -8
+    this.spriteOffsetY = -8
   }
 
   /*
@@ -27,7 +36,9 @@ export default class COIN extends Entity {
     super.play()
 
     // Check for actions.
-    if (this.state === 'idle') {}
+    if (this.state === 'idle') {
+      this.stateTransition = (this.stateTransition + 1) % SPIN_DURATION
+    }
 
     // If Coin has been picked up, make it disappear after a while.
     if (this.state === 'pickedup') {
@@ -36,6 +47,35 @@ export default class COIN extends Entity {
       if (this.stateTransition >= PICKEDUP_DURATION) {        
         this._expired = true
       }
+    }
+  }
+
+  paint (layer = 0) {
+    // Paint the coin spinning in place.
+    if (this.state === 'idle' && layer === LAYERS.MIDDLE) {
+      let spriteCol = 0
+
+      if (this.stateTransition > SPIN_DURATION * 0.25) spriteCol = 1
+      if (this.stateTransition > SPIN_DURATION * 0.5) spriteCol = 2
+      if (this.stateTransition > SPIN_DURATION * 0.75) spriteCol = 3
+
+      this.paintSprite({
+        spriteCol,
+        spriteRow: 1,
+      })
+
+    // Paint the coin sparkling and disappearing.
+    } else if (this.state === "pickedup" && layer === LAYERS.TOP) {
+      let spriteCol = 4
+
+      if (this.stateTransition > PICKEDUP_DURATION * 0.25) spriteCol = 5
+      if (this.stateTransition > PICKEDUP_DURATION * 0.5) spriteCol = 6
+      if (this.stateTransition > PICKEDUP_DURATION * 0.75) spriteCol = 7
+
+      this.paintSprite({
+        spriteCol,
+        spriteRow: 1,
+      })
     }
   }
 

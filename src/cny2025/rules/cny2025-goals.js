@@ -1,8 +1,10 @@
 import Rule from '@avo/rule'
 import Coin from '../entities/coin.js'
 import EnemyBasic from '../entities/enemy-basic.js'
+import { LAYERS } from '@avo/constants.js'
 
 const TIME_FOR_SHENANIGANS = 120
+const ANIMATION_DURATION = 120
 
 export default class CNY2025Goals extends Rule {
   constructor (app) {
@@ -13,14 +15,27 @@ export default class CNY2025Goals extends Rule {
     this.spawnCoin()
 
     this.eventCounter = 0
+
+    this.gameOver = false
+    this.animationCounter = 0
+
+    this.spriteSheet = app.assets['cny2025'].img
+    this.spriteSizeX = 16  // Size of each sprite on the sprite sheet.
+    this.spriteSizeY = 16
+    this.spriteScale = 2  // Scale of the sprite when paint()ed.
+    this.spriteOffsetX = -8  // Offset of the sprite when paint()ed.
+    this.spriteOffsetY = -8  // Usually half of sprite size, to centre-align.
   }
 
   play () {
     const app = this._app
     const hero = app.hero
 
-    // If there's no hero, or the hero ain't moving, then do nothing.
-    if (hero?.state !== 'moving') return
+    // If there's no hero, or the hero ain't moving, then do nothing except increment the animation counter.
+    if (hero?.state !== 'moving') {
+      this.animationCounter = (this.animationCounter + 1) % ANIMATION_DURATION
+      return
+    }
 
     // As the player increases their score, throw some curveballs along their way.
     const difficulty = Math.floor(this.score / 3)
@@ -33,8 +48,138 @@ export default class CNY2025Goals extends Rule {
     }
   }
 
+  paint (layer = 0) {
+    if (layer !== LAYERS.OVERLAY) return
+
+    const app = this._app
+    const c2d = app.canvas2d
+    const hero = app.hero
+
+    // If the game is over, display the score.
+    if (this.gameOver) {
+      const MID_X = app.canvasWidth / 2
+      const MID_Y = app.canvasHeight / 2
+
+      // Paint background
+      c2d.strokeStyle = '#c04040'
+      c2d.lineWidth = 8
+      c2d.fillStyle = 'rgba(255, 255, 255, 0.8)'
+      c2d.beginPath()
+      c2d.rect(MID_X - 200, MID_Y - 100, 400, 200)
+      c2d.fill()
+      c2d.stroke()
+      
+      // Paint Game Over Text
+      c2d.font = '4em monospace'
+      c2d.textBaseline = 'middle'
+      c2d.lineWidth = 12
+
+      let text = 'GAME OVER'
+      c2d.textAlign = 'center'
+      c2d.strokeStyle = '#fff'
+      c2d.strokeText(text, MID_X, MID_Y - 32)
+      c2d.fillStyle = '#C04040'
+      c2d.fillText(text, MID_X, MID_Y - 32)
+
+      // Paint score
+      this.paintSprite(MID_X - 32, MID_Y + 32, {
+        spriteCol: 0,
+        spriteRow: 1,
+        spriteScale: 3,
+      })
+
+      text = this.score
+      c2d.textAlign = 'left'
+      c2d.strokeStyle = '#fff'
+      c2d.strokeText(text, MID_X + 16, MID_Y + 32)
+      c2d.fillStyle = '#C0A040'
+      c2d.fillText(text, MID_X + 16, MID_Y + 32)
+
+    // If the hero hasn't moved, display the controls.
+    } else if (hero?.state === 'idle') {
+      const MID_X = app.canvasWidth / 2
+      const MID_Y = app.canvasHeight / 2
+      const animOffset = (this.animationCounter < ANIMATION_DURATION / 2) ? 0 : 1
+      
+      this.paintSprite(MID_X - 256, MID_Y - 32, {
+        spriteCol: 0 + animOffset,
+        spriteRow: 3,
+        spriteScale: 4,
+        spriteSizeX: 32,
+        spriteSizeY: 32,
+      })
+
+      this.paintSprite(MID_X + 192, MID_Y - 32, {
+        spriteCol: 2 + animOffset,
+        spriteRow: 3,
+        spriteScale: 4,
+        spriteSizeX: 32,
+        spriteSizeY: 32,
+      })
+
+    // Otherwise, display the current score
+    } else if (hero && hero.state === 'moving') {
+      const LEFT = 64
+      const TOP = 32
+      c2d.font = '2em monospace'
+      c2d.textBaseline = 'middle'
+      c2d.lineWidth = 8
+
+      let text = this.score
+      c2d.textAlign = 'left'
+      c2d.strokeStyle = '#fff'
+      c2d.strokeText(text, LEFT, TOP)
+      c2d.fillStyle = '#C0A040'
+      c2d.fillText(text, LEFT, TOP)
+
+      this.paintSprite(32, 32, {
+        spriteCol: 0,
+        spriteRow: 1,
+        spriteScale: 3,
+      })
+    }
+  }
+
+  paintSprite (x, y, args = {
+      spriteCol: undefined,
+      spriteRow: undefined,
+      spriteOffsetX: undefined,
+      spriteOffsetY: undefined,
+      spriteScale: undefined,
+      spriteSizeX: undefined,
+      spriteSizeY: undefined,
+      spriteRotation: undefined,
+    }) {
+      const app = this._app
+      const c2d = app.canvas2d
+      const spriteSheet = this.spriteSheet
+      if (!spriteSheet) return
+
+      c2d.save()
+  
+      const sizeX = args?.spriteSizeX ?? this.spriteSizeX
+      const sizeY = args?.spriteSizeY ?? this.spriteSizeY
+      const srcX = (args?.spriteCol ?? 0) * sizeX
+      const srcY = (args?.spriteRow ?? 0) * sizeY
+      const scale = args?.spriteScale ?? this.spriteScale
+  
+      c2d.translate(x, y)
+      c2d.scale(scale, scale)
+  
+      let tgtX = args?.spriteOffsetX ?? this.spriteOffsetX
+      let tgtY = args?.spriteOffsetY ?? this.spriteOffsetY
+  
+      c2d.drawImage(spriteSheet,
+        srcX, srcY, sizeX, sizeY,
+        tgtX, tgtY, sizeX, sizeY
+      )
+
+      c2d.restore()
+    }
+
   doGameOver () {
     console.log('BOOM! Game over! Score: ', this.score)
+    this.gameOver = true
   }
 
   spawnCoin () {

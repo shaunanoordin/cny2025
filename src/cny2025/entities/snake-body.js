@@ -8,6 +8,13 @@ export default class SnakeBody extends Entity {
 
     this.colour = '#804040'
     this.size = 32
+
+    this.spriteSheet = app.assets['cny2025'].img
+    this.spriteSizeX = 16
+    this.spriteSizeY = 16
+    this.spriteScale = 2
+    this.spriteOffsetX = -8
+    this.spriteOffsetY = -8
   }
 
   /*
@@ -20,19 +27,16 @@ export default class SnakeBody extends Entity {
   }
 
   paint (layer = 0) {
-    const c2d = this._app.canvas2d
-    this._app.applyCameraTransforms()
+    // Bug fix: when a snake body segment first spawns, it blinks into existence
+    // just outside of the arena for a single frame.
+    if (this.x <= 0 || this.y <= 0) return
 
     if (layer === LAYERS.MIDDLE) {
-      c2d.fillStyle = this.colour
-      c2d.strokeStyle = '#404040'
-      c2d.lineWidth = 1
-      c2d.beginPath()
-      c2d.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI)
-      c2d.fill()
-      c2d.stroke()
+      this.paintSprite({
+        spriteCol: 2,
+        spriteRow: 0,
+        spriteRotation: this.rotation - Math.PI / 2
+      })
     }
-
-    this._app.undoCameraTransforms()
   }
 }

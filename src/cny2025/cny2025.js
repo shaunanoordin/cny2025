@@ -17,8 +17,7 @@ export default class CNY2025 extends Story {
 
     }
     this.assets = {
-      // "hero": new ImageAsset('assets/avo-sprites-2024-08-samiel.png'),
-      // "map": new ImageAsset('assets/avo-sprites-2024-09-simple-map-tiles.png'),
+      "cny2025": new ImageAsset('assets/cny2025-sprites.png'),
     }
 
     // Add event listener
@@ -42,7 +41,6 @@ export default class CNY2025 extends Story {
 
     // Set up Entities (just the hero, actually)
     app.hero = app.addEntity(new Snake(app, Math.floor(ARENA_WIDTH / 2), Math.floor(ARENA_HEIGHT / 2)))
-    app.hero.rotation = ROTATIONS.NORTH
     app.camera.target = app.hero
 
     // Set up Map

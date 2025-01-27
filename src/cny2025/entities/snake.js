@@ -1,7 +1,5 @@
 import Entity from '@avo/entity'
-// import { POINTER_STATES, FRAME_DURATION, LAYERS, DIRECTIONS } from '@avo/constants.js'
-import { angleDiff } from '@avo/misc.js'
-import { LAYERS } from '@avo/constants.js'
+import { LAYERS, ROTATIONS } from '@avo/constants.js'
 import SnakeBody from './snake-body.js'
 
 const EXPLOSION_DURATION = 30
@@ -16,6 +14,7 @@ export default class Snake extends Entity {
     this.row = row
     this.size = 32
 
+    this.rotation = ROTATIONS.SOUTH
     this.intent = undefined
     this.action = undefined
     this.moving = false
@@ -30,6 +29,13 @@ export default class Snake extends Entity {
     this.moveHistory = []  // Movement history. index 0 is the most recent position of the head (i.e. this object), last item is the oldest position.
     this.moveHistoryLimit = this.bodySegmentSpacing * 2  // Limits have much movement we're recording. This increases by bodySegmentSpacing every time a coin is picked up.
     this.movementSpeed = 4  // How fast the snake moves. WARNING: don't confuse with Entity.moveSpeed!
+
+    this.spriteSheet = app.assets['cny2025'].img
+    this.spriteSizeX = 16
+    this.spriteSizeY = 16
+    this.spriteScale = 2
+    this.spriteOffsetX = -8
+    this.spriteOffsetY = -8
   }
 
   /*
@@ -85,6 +91,7 @@ export default class Snake extends Entity {
       this.bodySegments.forEach((bodySegment, i) => {
         bodySegment.x = this.moveHistory[(i+1) * this.bodySegmentSpacing]?.x || 0
         bodySegment.y = this.moveHistory[(i+1) * this.bodySegmentSpacing]?.y || 0
+        bodySegment.rotation = this.moveHistory[(i+1) * this.bodySegmentSpacing]?.rotation || 0
       })
 
       // Cleanup.
@@ -109,21 +116,56 @@ export default class Snake extends Entity {
 
   paint (layer = 0) {
     // super.paint(layer)
+    const app = this._app
     const c2d = this._app.canvas2d
-    this._app.applyCameraTransforms()
+    const state = this.state
 
-    if (layer === LAYERS.MIDDLE) {
-      // Draw head
-      c2d.fillStyle = this.colour
-      c2d.strokeStyle = '#404040'
-      c2d.lineWidth = 1
-      c2d.beginPath()
-      c2d.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI)
-      c2d.fill()
-      c2d.stroke()
+    if (state === 'idle' || state === 'moving') {
+      if (layer === LAYERS.MIDDLE) {
+        // Draw head
+        this.paintSprite({
+          spriteCol: 0,
+          spriteRow: 0,
+          spriteRotation: this.rotation - Math.PI / 2
+        })
+      }
 
-    } else if (layer === LAYERS.BOTTOM) {
+    } else if (state === 'exploding') {
+      //Draw explosion
+      if (layer === LAYERS.TOP) {
+        let spriteCol = 0
+        if (this.stateTransition > EXPLOSION_DURATION * 0.3) spriteCol = 1
+        if (this.stateTransition > EXPLOSION_DURATION * 0.5) spriteCol = 2
+        if (this.stateTransition > EXPLOSION_DURATION * 0.7) spriteCol = 3
+
+        this.paintSprite({
+          spriteCol,
+          spriteRow: 1,
+          spriteSizeX: 32,
+          spriteSizeY: 32,
+          spriteOffsetX: -16,
+          spriteOffsetY: -16, 
+        })
+      }
+
+    } else {
+      // Draw circle
+      if (layer === LAYERS.MIDDLE) {
+        app.applyCameraTransforms()
+        c2d.fillStyle = '#606060'
+        c2d.strokeStyle = '#404040'
+        c2d.lineWidth = 1
+        c2d.beginPath()
+        c2d.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI)
+        c2d.fill()
+        c2d.stroke()
+        app.undoCameraTransforms()
+      }
+    }
+
+    if (layer === LAYERS.BOTTOM) {
       //Draw tail
+      app.applyCameraTransforms()
       c2d.fillStyle = '#a0a0a0'
       c2d.strokeStyle = '#c0c0c0'
       c2d.lineWidth = 1
@@ -133,9 +175,8 @@ export default class Snake extends Entity {
         c2d.fill()
         c2d.stroke()
       })
+      app.undoCameraTransforms()
     }
-
-    this._app.undoCameraTransforms()
   }
 
   onCollision (target, collisionCorrection) {

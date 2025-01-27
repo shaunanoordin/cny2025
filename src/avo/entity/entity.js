@@ -168,6 +168,11 @@ export default class Entity {
     spriteOffsetX: undefined,
     spriteOffsetY: undefined,
     spriteScale: undefined,
+    spriteSizeX: undefined,
+    spriteSizeY: undefined,
+    spriteRotation: undefined,
+    spriteFlipX: false,
+    spriteFlipY: false,
   }) {
     const app = this._app
     const c2d = app.canvas2d
@@ -175,16 +180,22 @@ export default class Entity {
 
     app.applyCameraTransforms()
 
-    const srcX = (args?.spriteCol ?? this.getSpriteCol()) * this.spriteSizeX
-    const srcY = (args?.spriteRow ?? this.getSpriteRow()) * this.spriteSizeY
-    const sizeX = this.spriteSizeX
-    const sizeY = this.spriteSizeY
+    const sizeX = args?.spriteSizeX ?? this.spriteSizeX
+    const sizeY = args?.spriteSizeY ?? this.spriteSizeY
+    const srcX = (args?.spriteCol ?? this.getSpriteCol()) * sizeX
+    const srcY = (args?.spriteRow ?? this.getSpriteRow()) * sizeY
     const scale = args?.spriteScale ?? this.spriteScale
-    const flipX = (this.spriteFlipEastToWest && this.getSpriteDirection() === DIRECTIONS.WEST) ? -1 : 1
+    // const flipX = (this.spriteFlipEastToWest && this.getSpriteDirection() === DIRECTIONS.WEST) ? -1 : 1
+    const flipX = (args?.spriteSizeX) ? -1 : 1  // CNY2025
 
     c2d.translate(this.x, this.y)  // 1. This moves the 'drawing origin' to match the position of (the centre of) the Entity.
     c2d.scale(flipX * scale, scale)  // 2. This ensures the sprite scales with the 'drawing origin' as the anchor point.
     // c2d.rotate(this.rotation)  // 3. If we wanted to, we could rotate the sprite around the 'drawing origin'.
+
+    // CNY2025
+    if (args?.spriteRotation !== undefined) {
+      c2d.rotate(args?.spriteRotation)
+    }
 
     // 4. tgtX and tgtY specify where to draw the sprite, relative to the 'drawing origin'.
     let tgtX = args?.spriteOffsetX ?? this.spriteOffsetX  // Usually this is sizeX * -0.5, to centre-align.

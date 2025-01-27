@@ -1,5 +1,5 @@
 import Rule from '@avo/rule'
-import { POINTER_DEADZONE_RADIUS, POINTER_STATES } from '@avo/constants.js'
+import { POINTER_DEADZONE_RADIUS, POINTER_STATES, LAYERS, TILE_SIZE } from '@avo/constants.js'
 
 export default class SnakeControls extends Rule {
   constructor (app) {
@@ -67,6 +67,45 @@ export default class SnakeControls extends Rule {
       }
 
       hero.intent = intent
+    }
+  }
+
+  paint (layer = 0) {
+    if (layer === LAYERS.OVERLAY) {
+      this.paintPointerInput()
+    }
+  }
+
+  /*
+  Draw pointer input, if any. This helps players get visual feedback on their
+  touchscreens.
+   */
+  paintPointerInput () {
+    const c2d = this._app.canvas2d
+    const {
+      pointerCurrent,
+      pointerStart,
+      pointerState,
+    } = this._app.playerInput
+    const START_POINT_RADIUS = TILE_SIZE * 1, CURRENT_POINT_RADIUS = TILE_SIZE * 0.5
+    
+    if (pointerState === POINTER_STATES.POINTER_DOWN) {
+      c2d.lineWidth = Math.floor(Math.min(TILE_SIZE * 0.125, 2))
+      c2d.fillStyle = '#40404080'
+      c2d.strokeStyle = '#40404080'
+
+      c2d.beginPath()
+      c2d.arc(pointerStart.x, pointerStart.y, START_POINT_RADIUS, 0, 2 * Math.PI)
+      c2d.stroke()
+
+      c2d.beginPath()
+      c2d.arc(pointerCurrent.x, pointerCurrent.y, CURRENT_POINT_RADIUS, 0, 2 * Math.PI)
+      c2d.fill()
+
+      c2d.beginPath()
+      c2d.moveTo(pointerStart.x, pointerStart.y)
+      c2d.lineTo(pointerCurrent.x, pointerCurrent.y)
+      c2d.stroke()
     }
   }
 
