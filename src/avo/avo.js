@@ -452,6 +452,13 @@ export default class AvO {
         this.setHomeMenu(!this.homeMenu)
         break
 
+      // CNY2025: reload
+      case 'r':
+      case 'R':
+        this.html.buttonReload.click()
+        break
+
+      /*
       // DEBUG
       case 'x':
       case 'X':
@@ -459,6 +466,7 @@ export default class AvO {
           this.setInteractionMenu(new Interaction(this))
         }
         break
+       */
 
       /*
       // DEBUG
