@@ -137,6 +137,9 @@ table th {
 /*
 CNY2025!
  */
+#app.cny2025 > main #canvas {
+  background: #804040;
+}
 #app.cny2025 > main #home-menu {
   font-family: sans-serif;
   text-align: center;
