@@ -91,6 +91,7 @@ export default class Snake extends Entity {
       this.bodySegments.forEach((bodySegment, i) => {
         bodySegment.x = this.moveHistory[(i+1) * this.bodySegmentSpacing]?.x || 0
         bodySegment.y = this.moveHistory[(i+1) * this.bodySegmentSpacing]?.y || 0
+        bodySegment.rotation = this.moveHistory[(i+1) * this.bodySegmentSpacing]?.rotation || 0
       })
 
       // Cleanup.
