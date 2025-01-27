@@ -77,6 +77,7 @@ export default class AvO {
     this.resetPlayerInput()
     
     this.initialised = false
+    this.paused = false // CNY2025
     this.timeAccumulator = 0
     this.prevTime = null
     this.nextFrame = window.requestAnimationFrame(this.main.bind(this))
@@ -162,6 +163,7 @@ export default class AvO {
   play () {
     // If a menu is open, pause all action gameplay
     if (this.homeMenu || this.interactionMenu) return
+    if (this.paused) return // CNY2025
 
     // Run the action gameplay
     // ----------------
@@ -456,6 +458,12 @@ export default class AvO {
       case 'r':
       case 'R':
         this.html.buttonReload.click()
+        break
+      
+      // CNY2025: pause
+      case 'p':
+      case 'P':
+        this.paused = !this.paused
         break
 
       /*
