@@ -47,19 +47,56 @@ export default class CNY2025Goals extends Rule {
   paint (layer = 0) {
     if (layer !== LAYERS.OVERLAY) return
 
-    const c2d = this._app.canvas2d
-    const hero = this._app.hero
+    const app = this._app
+    const c2d = app.canvas2d
+    const hero = app.hero
 
     // If the game is over, display the score.
     if (this.gameOver) {
-      // TODO
+      const MID_X = app.canvasWidth / 2
+      const MID_Y = app.canvasHeight / 2
+
+      // Paint background
+      c2d.strokeStyle = '#c04040'
+      c2d.lineWidth = 8
+      c2d.fillStyle = 'rgba(255, 255, 255, 0.8)'
+      c2d.beginPath()
+      c2d.rect(MID_X - 200, MID_Y - 100, 400, 200)
+      c2d.fill()
+      c2d.stroke()
+      
+      // Paint Game Over Text
+      c2d.font = '4em monospace'
+      c2d.textBaseline = 'middle'
+      c2d.lineWidth = 12
+
+      let text = 'GAME OVER'
+      c2d.textAlign = 'center'
+      c2d.strokeStyle = '#fff'
+      c2d.strokeText(text, MID_X, MID_Y - 32)
+      c2d.fillStyle = '#C04040'
+      c2d.fillText(text, MID_X, MID_Y - 32)
+
+      // Paint score
+      this.paintSprite(MID_X - 32, MID_Y + 32, {
+        spriteCol: 0,
+        spriteRow: 1,
+        spriteScale: 3,
+      })
+
+      text = this.score
+      c2d.textAlign = 'left'
+      c2d.strokeStyle = '#fff'
+      c2d.strokeText(text, MID_X + 16, MID_Y + 32)
+      c2d.fillStyle = '#C0A040'
+      c2d.fillText(text, MID_X + 16, MID_Y + 32)
 
     // If the hero hasn't moved, display the controls.
     } else if (hero && hero.state !== 'moving') {
       // TODO
 
     // Otherwise, display the current score
-    } else if (hero.state === 'moving') {
+    } else if (hero && hero.state === 'moving') {
       const LEFT = 64
       const TOP = 32
       c2d.font = '2em monospace'
@@ -120,6 +157,7 @@ export default class CNY2025Goals extends Rule {
 
   doGameOver () {
     console.log('BOOM! Game over! Score: ', this.score)
+    this.gameOver = true
   }
 
   spawnCoin () {
