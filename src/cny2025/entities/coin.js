@@ -51,20 +51,31 @@ export default class COIN extends Entity {
   }
 
   paint (layer = 0) {
-    if (layer === LAYERS.MIDDLE) {
+    // Paint the coin spinning in place.
+    if (this.state === 'idle' && layer === LAYERS.MIDDLE) {
+      let spriteCol = 0
 
-      if (this.state === 'idle') {
-        let spriteCol = 0
+      if (this.stateTransition > SPIN_DURATION * 0.25) spriteCol = 1
+      if (this.stateTransition > SPIN_DURATION * 0.5) spriteCol = 2
+      if (this.stateTransition > SPIN_DURATION * 0.75) spriteCol = 3
 
-        if (this.stateTransition > SPIN_DURATION * 0.25) spriteCol = 1
-        if (this.stateTransition > SPIN_DURATION * 0.5) spriteCol = 2
-        if (this.stateTransition > SPIN_DURATION * 0.75) spriteCol = 3
+      this.paintSprite({
+        spriteCol,
+        spriteRow: 1,
+      })
 
-        this.paintSprite({
-          spriteCol,
-          spriteRow: 1,
-        })
-      }
+    // Paint the coin sparkling and disappearing.
+    } else if (this.state === "pickedup" && layer === LAYERS.TOP) {
+      let spriteCol = 4
+
+      if (this.stateTransition > PICKEDUP_DURATION * 0.25) spriteCol = 5
+      if (this.stateTransition > PICKEDUP_DURATION * 0.5) spriteCol = 6
+      if (this.stateTransition > PICKEDUP_DURATION * 0.75) spriteCol = 7
+
+      this.paintSprite({
+        spriteCol,
+        spriteRow: 1,
+      })
     }
   }
 
