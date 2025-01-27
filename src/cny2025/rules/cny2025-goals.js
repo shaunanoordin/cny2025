@@ -96,7 +96,7 @@ export default class CNY2025Goals extends Rule {
       c2d.fillText(text, MID_X + 16, MID_Y + 32)
 
     // If the hero hasn't moved, display the controls.
-    } else if (hero && hero.state !== 'moving') {
+    } else if (hero?.state === 'idle') {
       const MID_X = app.canvasWidth / 2
       const MID_Y = app.canvasHeight / 2
       const animOffset = (this.animationCounter < ANIMATION_DURATION / 2) ? 0 : 1
