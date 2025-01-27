@@ -129,7 +129,7 @@ export default class EnemyBasic extends Entity {
         let tgtY = this.y + Math.sin(this.rotation) * exhaustDistance
   
         c2d.fillStyle = '#fff'
-        c2d.strokeStyle = '#f0f040'
+        c2d.strokeStyle = '#40f0f0'
         c2d.lineWidth = lineWidth
         c2d.beginPath()
         c2d.arc(tgtX, tgtY, exhaustSize, 0, 2 * Math.PI)
@@ -148,7 +148,7 @@ export default class EnemyBasic extends Entity {
 
         this.paintSprite({
           spriteCol,
-          spriteRow: 1,
+          spriteRow: 2,
           spriteSizeX: 32,
           spriteSizeY: 32,
           spriteOffsetX: -16,

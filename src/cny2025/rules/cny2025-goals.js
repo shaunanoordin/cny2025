@@ -103,7 +103,7 @@ export default class CNY2025Goals extends Rule {
       
       this.paintSprite(MID_X - 256, MID_Y - 32, {
         spriteCol: 0 + animOffset,
-        spriteRow: 2,
+        spriteRow: 3,
         spriteScale: 4,
         spriteSizeX: 32,
         spriteSizeY: 32,
@@ -111,7 +111,7 @@ export default class CNY2025Goals extends Rule {
 
       this.paintSprite(MID_X + 192, MID_Y - 32, {
         spriteCol: 2 + animOffset,
-        spriteRow: 2,
+        spriteRow: 3,
         spriteScale: 4,
         spriteSizeX: 32,
         spriteSizeY: 32,
