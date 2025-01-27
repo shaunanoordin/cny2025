@@ -4,6 +4,7 @@ import EnemyBasic from '../entities/enemy-basic.js'
 import { LAYERS } from '@avo/constants.js'
 
 const TIME_FOR_SHENANIGANS = 120
+const ANIMATION_DURATION = 120
 
 export default class CNY2025Goals extends Rule {
   constructor (app) {
@@ -30,8 +31,11 @@ export default class CNY2025Goals extends Rule {
     const app = this._app
     const hero = app.hero
 
-    // If there's no hero, or the hero ain't moving, then do nothing.
-    if (hero?.state !== 'moving') return
+    // If there's no hero, or the hero ain't moving, then do nothing except increment the animation counter.
+    if (hero?.state !== 'moving') {
+      this.animationCounter = (this.animationCounter + 1) % ANIMATION_DURATION
+      return
+    }
 
     // As the player increases their score, throw some curveballs along their way.
     const difficulty = Math.floor(this.score / 3)
@@ -93,7 +97,25 @@ export default class CNY2025Goals extends Rule {
 
     // If the hero hasn't moved, display the controls.
     } else if (hero && hero.state !== 'moving') {
-      // TODO
+      const MID_X = app.canvasWidth / 2
+      const MID_Y = app.canvasHeight / 2
+      const animOffset = (this.animationCounter < ANIMATION_DURATION / 2) ? 0 : 1
+      
+      this.paintSprite(MID_X - 256, MID_Y - 32, {
+        spriteCol: 0 + animOffset,
+        spriteRow: 2,
+        spriteScale: 4,
+        spriteSizeX: 32,
+        spriteSizeY: 32,
+      })
+
+      this.paintSprite(MID_X + 192, MID_Y - 32, {
+        spriteCol: 2 + animOffset,
+        spriteRow: 2,
+        spriteScale: 4,
+        spriteSizeX: 32,
+        spriteSizeY: 32,
+      })
 
     // Otherwise, display the current score
     } else if (hero && hero.state === 'moving') {
