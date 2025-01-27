@@ -171,6 +171,8 @@ export default class Entity {
     spriteSizeX: undefined,
     spriteSizeY: undefined,
     spriteRotation: undefined,
+    spriteFlipX: false,
+    spriteFlipY: false,
   }) {
     const app = this._app
     const c2d = app.canvas2d
@@ -183,7 +185,8 @@ export default class Entity {
     const srcX = (args?.spriteCol ?? this.getSpriteCol()) * sizeX
     const srcY = (args?.spriteRow ?? this.getSpriteRow()) * sizeY
     const scale = args?.spriteScale ?? this.spriteScale
-    const flipX = (this.spriteFlipEastToWest && this.getSpriteDirection() === DIRECTIONS.WEST) ? -1 : 1
+    // const flipX = (this.spriteFlipEastToWest && this.getSpriteDirection() === DIRECTIONS.WEST) ? -1 : 1
+    const flipX = (args?.spriteSizeX) ? -1 : 1  // CNY2025
 
     c2d.translate(this.x, this.y)  // 1. This moves the 'drawing origin' to match the position of (the centre of) the Entity.
     c2d.scale(flipX * scale, scale)  // 2. This ensures the sprite scales with the 'drawing origin' as the anchor point.
