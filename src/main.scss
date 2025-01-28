@@ -172,6 +172,7 @@ CNY2025!
   #home-menu {
     font-family: sans-serif;
     text-align: center;
+    overflow: visible;
 
     > div {
       margin: 0;
@@ -185,6 +186,7 @@ CNY2025!
   }
   
   #cny2025-card {
+    display: block;
     max-width: 100%;
   }
 
