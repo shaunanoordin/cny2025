@@ -223,6 +223,7 @@ export default class AvO {
 
     // Draw background grid
     // ----------------
+    /* CNY2025: no background grid
     const GRID_SIZE = TILE_SIZE * camera.zoom
     const offsetX = (this.camera.x % GRID_SIZE) - GRID_SIZE
     const offsetY = (this.camera.y % GRID_SIZE) - GRID_SIZE
@@ -245,6 +246,7 @@ export default class AvO {
         }
       }
     }
+    */
     // ----------------
 
     // Draw map tiles, entities, and other elements

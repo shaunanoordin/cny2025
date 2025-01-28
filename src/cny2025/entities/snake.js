@@ -1,14 +1,15 @@
 import Entity from '@avo/entity'
 import { LAYERS, ROTATIONS } from '@avo/constants.js'
 import SnakeBody from './snake-body.js'
+import { DIFFICULTY } from '../cny2025.js'
 
 const EXPLOSION_DURATION = 30
 
 export default class Snake extends Entity {
-  constructor (app, col = 0, row = 0) {
+  constructor (app, col = 0, row = 0, difficulty = DIFFICULTY.EASY) {
     super(app)
     this._type = 'snake'
-
+    
     this.colour = '#c04040'
     this.col = col
     this.row = row
@@ -17,18 +18,20 @@ export default class Snake extends Entity {
     this.rotation = ROTATIONS.SOUTH
     this.intent = undefined
     this.action = undefined
-    this.moving = false
+
+    this.difficulty = difficulty
     this.state = 'idle' // 'idle': snake is waiting for commands. 
                         // 'moving': snake is moving. You can steer it!
                         // 'exploding': oops, snake has collided into something and is in the state of exploding!
                         // 'exploded': snake has exploded.
     this.stateTransition = 0
 
+    this.movementSpeed = 3  // How fast the snake moves. WARNING: don't confuse with Entity.moveSpeed!
+    if (this.difficulty === DIFFICULTY.HARD) { this.movementSpeed = 4 }
     this.bodySegments = []  // SnakeBody segments. index 0 is the first body segment after the head (i.e. this object), last item is the tip of the tail.
-    this.bodySegmentSpacing = 8  // Space (in the move history) between each body segment. This can be calculated as 2x movementSpeed.
+    this.bodySegmentSpacing = Math.ceil(this.size / this.movementSpeed)  // Space (in the move history) between each body segment.
     this.moveHistory = []  // Movement history. index 0 is the most recent position of the head (i.e. this object), last item is the oldest position.
     this.moveHistoryLimit = this.bodySegmentSpacing * 2  // Limits have much movement we're recording. This increases by bodySegmentSpacing every time a coin is picked up.
-    this.movementSpeed = 4  // How fast the snake moves. WARNING: don't confuse with Entity.moveSpeed!
 
     this.spriteSheet = app.assets['cny2025'].img
     this.spriteSizeX = 16
