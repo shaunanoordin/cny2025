@@ -21,7 +21,7 @@ export default class EnemyBasic extends Entity {
                             // 'exploding': enemy has collided into something and is in the state of exploding!
                             // 'exploded': enemy has exploded.
     this.stateTransition = 0
-    this.movementSpeed = 4  // How fast the enemy moves. WARNING: don't confuse with Entity.moveSpeed!
+    this.movementSpeed = 3  // How fast the enemy moves. WARNING: don't confuse with Entity.moveSpeed!
 
     this.spriteSheet = app.assets['cny2025'].img
     this.spriteSizeX = 16

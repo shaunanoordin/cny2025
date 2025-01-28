@@ -24,11 +24,11 @@ export default class Snake extends Entity {
                         // 'exploded': snake has exploded.
     this.stateTransition = 0
 
+    this.movementSpeed = 3  // How fast the snake moves. WARNING: don't confuse with Entity.moveSpeed!
     this.bodySegments = []  // SnakeBody segments. index 0 is the first body segment after the head (i.e. this object), last item is the tip of the tail.
-    this.bodySegmentSpacing = 8  // Space (in the move history) between each body segment. This can be calculated as 2x movementSpeed.
+    this.bodySegmentSpacing = Math.ceil(this.size / this.movementSpeed)  // Space (in the move history) between each body segment.
     this.moveHistory = []  // Movement history. index 0 is the most recent position of the head (i.e. this object), last item is the oldest position.
     this.moveHistoryLimit = this.bodySegmentSpacing * 2  // Limits have much movement we're recording. This increases by bodySegmentSpacing every time a coin is picked up.
-    this.movementSpeed = 4  // How fast the snake moves. WARNING: don't confuse with Entity.moveSpeed!
 
     this.spriteSheet = app.assets['cny2025'].img
     this.spriteSizeX = 16
