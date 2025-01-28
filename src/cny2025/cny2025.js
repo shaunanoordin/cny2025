@@ -8,6 +8,11 @@ import CNY2025Goals from './rules/cny2025-goals.js'
 import FloorTile from './tiles/floor-tile.js'
 import WallTile from './tiles/wall-tile.js'
 
+export const DIFFICULTY = {
+  'EASY': 0,
+  'HARD': 1,
+}
+
 export default class CNY2025 extends Story {
   constructor (app) {
     super(app)
@@ -16,9 +21,13 @@ export default class CNY2025 extends Story {
       "cny2025": new ImageAsset('assets/cny2025-sprites.png'),
     }
 
+    this.difficulty = DIFFICULTY.EASY
+
     // Add event listener
     this.startButton_onClick = this.startButton_onClick.bind(this)
+    this.startExpertModeButton_onClick = this.startExpertModeButton_onClick.bind(this)
     document.getElementById('cny2025-start-button').addEventListener('click', this.startButton_onClick)
+    document.getElementById('cny2025-start-expert-mode-button').addEventListener('click', this.startExpertModeButton_onClick)
     // ⚠️ NOTE: since the Story doesn't ever unload/deconstruct, there's no corresponding .removeEventListener()
 
     // Open home menu when the game starts
@@ -70,6 +79,13 @@ export default class CNY2025 extends Story {
 
   startButton_onClick () {
     this._app.setHomeMenu(false)
+    this.difficulty = DIFFICULTY.EASY
+    this.start()
+  }
+
+  startExpertModeButton_onClick () {
+    this._app.setHomeMenu(false)
+    this.difficulty = DIFFICULTY.HARD
     this.start()
   }
 }
