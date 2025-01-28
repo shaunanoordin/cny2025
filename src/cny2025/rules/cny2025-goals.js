@@ -2,19 +2,25 @@ import Rule from '@avo/rule'
 import Coin from '../entities/coin.js'
 import EnemyBasic from '../entities/enemy-basic.js'
 import { LAYERS } from '@avo/constants.js'
+import { DIFFICULTY } from '../cny2025.js'
 
-const TIME_FOR_SHENANIGANS = 600
 const ANIMATION_DURATION = 120
 
 export default class CNY2025Goals extends Rule {
-  constructor (app) {
+  constructor (app, difficulty = DIFFICULTY.EASY) {
     super(app)
     this._type = 'cny2025-goals'
 
+    this.difficulty = difficulty
     this.score = 0
     this.spawnCoin()
 
     this.eventCounter = 0
+    this.timeToEvent = 600
+    if (this.difficulty === DIFFICULTY.HARD) { this.timeToEvent = 120 }
+
+    this.coinsPerEnemy = 10
+    if (this.difficulty === DIFFICULTY.HARD) { this.coinsPerEnemy = 3 }
 
     this.gameOver = false
     this.animationCounter = 0
@@ -38,11 +44,11 @@ export default class CNY2025Goals extends Rule {
     }
 
     // As the player increases their score, throw some curveballs along their way.
-    const difficulty = Math.floor(this.score / 5)
-    if (difficulty > 0) {
+    const enemiesToSpawn = Math.floor(this.score / this.coinsPerEnemy)
+    if (enemiesToSpawn > 0) {
       this.eventCounter++
-      if (this.eventCounter >= TIME_FOR_SHENANIGANS) {
-        for (let i = 0 ; i < difficulty ; i++) this.spawnEnemy()
+      if (this.eventCounter >= this.timeToEvent) {
+        for (let i = 0 ; i < enemiesToSpawn ; i++) this.spawnEnemy()
         this.eventCounter = 0
       }
     }
@@ -196,7 +202,7 @@ export default class CNY2025Goals extends Rule {
 
     // Spawn the enemy at a random position.
     const { col, row } = this.getRandomPosition()
-    const enemy = new EnemyBasic(app, col, row) 
+    const enemy = new EnemyBasic(app, col, row, this.difficulty) 
     app.addEntity(enemy)
   }
 

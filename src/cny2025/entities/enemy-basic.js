@@ -1,12 +1,13 @@
 import Entity from '@avo/entity'
 import { LAYERS } from '@avo/constants.js'
+import { DIFFICULTY } from '../cny2025.js'
 
 const SPAWN_DURATION = 30
 const EXPLOSION_DURATION = 30
 const ROCKET_EXHAUST_ANIMATION_DURATION = 30
 
 export default class EnemyBasic extends Entity {
-  constructor (app, col = 0, row = 0) {
+  constructor (app, col = 0, row = 0, difficulty = DIFFICULTY.EASY) {
     super(app)
     this._type = 'enemy-basic'
 
@@ -16,12 +17,14 @@ export default class EnemyBasic extends Entity {
     this.size = 32
     this.solid = false
 
+    this.difficulty = difficulty
     this.state = 'spawning' // 'spawning': enemy is in the process of spawning. 
                             // 'moving': enemy is moving.
                             // 'exploding': enemy has collided into something and is in the state of exploding!
                             // 'exploded': enemy has exploded.
     this.stateTransition = 0
     this.movementSpeed = 3  // How fast the enemy moves. WARNING: don't confuse with Entity.moveSpeed!
+    if (this.difficulty === DIFFICULTY.HARD) { this.movementSpeed = 4 }
 
     this.spriteSheet = app.assets['cny2025'].img
     this.spriteSizeX = 16

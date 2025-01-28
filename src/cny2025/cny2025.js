@@ -45,7 +45,7 @@ export default class CNY2025 extends Story {
     const ARENA_HEIGHT = 25
 
     // Set up Entities (just the hero, actually)
-    app.hero = app.addEntity(new Snake(app, Math.floor(ARENA_WIDTH / 2), Math.floor(ARENA_HEIGHT / 2)))
+    app.hero = app.addEntity(new Snake(app, Math.floor(ARENA_WIDTH / 2), Math.floor(ARENA_HEIGHT / 2), this.difficulty))
     app.camera.target = app.hero
 
     // Set up Map
@@ -74,7 +74,7 @@ export default class CNY2025 extends Story {
     // Add Rules
     // Be sure to only do this after the map and entities have been set up. 
     app.addRule(new SnakeControls(app))
-    app.addRule(new CNY2025Goals(app))
+    app.addRule(new CNY2025Goals(app, this.difficulty))
   }
 
   startButton_onClick () {
