@@ -1,6 +1,5 @@
 import Story from '@avo/story'
 import ImageAsset from '@avo/image-asset.js'
-import { ROTATIONS } from '@avo/constants.js'
 
 import Snake from './entities/snake.js'
 import SnakeControls from './rules/snake-controls.js'
@@ -13,9 +12,6 @@ export default class CNY2025 extends Story {
   constructor (app) {
     super(app)
 
-    this.html = {
-
-    }
     this.assets = {
       "cny2025": new ImageAsset('assets/cny2025-sprites.png'),
     }
@@ -74,5 +70,6 @@ export default class CNY2025 extends Story {
 
   startButton_onClick () {
     this._app.setHomeMenu(false)
+    this.start()
   }
 }
