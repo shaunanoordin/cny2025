@@ -3,7 +3,7 @@ import Coin from '../entities/coin.js'
 import EnemyBasic from '../entities/enemy-basic.js'
 import { LAYERS } from '@avo/constants.js'
 
-const TIME_FOR_SHENANIGANS = 120
+const TIME_FOR_SHENANIGANS = 600
 const ANIMATION_DURATION = 120
 
 export default class CNY2025Goals extends Rule {
@@ -38,7 +38,7 @@ export default class CNY2025Goals extends Rule {
     }
 
     // As the player increases their score, throw some curveballs along their way.
-    const difficulty = Math.floor(this.score / 3)
+    const difficulty = Math.floor(this.score / 5)
     if (difficulty > 0) {
       this.eventCounter++
       if (this.eventCounter >= TIME_FOR_SHENANIGANS) {
