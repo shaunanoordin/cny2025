@@ -9,13 +9,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/shaunanoordin/cny2023.git"
+    "url": "https://github.com/shaunanoordin/cny2025.git"
   },
   "author": "Shaun A. Noordin",
   "bugs": {
-    "url": "https://github.com/shaunanoordin/cny2023/issues"
+    "url": "https://github.com/shaunanoordin/cny2025/issues"
   },
-  "homepage": "https://github.com/shaunanoordin/cny2023#readme",
+  "homepage": "https://github.com/shaunanoordin/cny2025#readme",
   "devDependencies": {
     "@babel/core": "~7.23.0",
     "@babel/plugin-transform-optional-chaining": "~7.23.0",
