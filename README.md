@@ -1,4 +1,4 @@
-# Chinese New Year 2023 - Year of the Snake Card & Game
+# Chinese New Year 2025 - Year of the Snake Card & Game
 
 This is a Chinese New Year greeting card and mini video game for the Year of the Rabbit. Gong Xi Fa Cai, everyone!
 
