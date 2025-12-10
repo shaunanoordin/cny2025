@@ -1,6 +1,6 @@
 # Chinese New Year 2025 - Year of the Snake Card & Game
 
-This is a Chinese New Year greeting card and mini video game for the Year of the Rabbit. Gong Xi Fa Cai, everyone!
+This is a Chinese New Year greeting card and mini video game for the Year of the Snake. Gong Xi Fa Cai, everyone!
 
 Play it online at shaunanoordin.github.io/cny2025 or shaunanoordin.com/cny2025
 
